@@ -4,8 +4,8 @@ if env.TargetPlatform() == 'windows' and ARGUMENTS.get('PRECOMPILED', 'TRUE') !=
 
     env.Append(CPPDEFINES =['WIN32','CSFUNIFIED_EXPORTS', 'UNIFIED_DLL'])
 
-    envLocal = env.Clone()
-    PCH, PCH_OBJ = envLocal.PCH('pre-compiled.cpp')
+    env = env.Clone()
+    PCH, PCH_OBJ = env.PCH('pre-compiled.cpp')
     env['PCH'] = PCH
     env['PCHSTOP'] = 'pre-compiled.h'
     env.Append(CPPFLAGS=['/FI' + 'pre-compiled.h'])
@@ -15,3 +15,15 @@ if env.TargetPlatform() == 'windows' and ARGUMENTS.get('PRECOMPILED', 'TRUE') !=
     #    '..\pre-compiled.obj' not linked or overwritten; linking object as if no debug info
     env.Append(LIBS = [PCH_OBJ])
     Default(PCH)
+else:
+    import gch2
+
+    gch2.generate(env)
+
+    env['precompiled_header'] = File('/Users/gannons/Development/trunk/tools/pre-compiled/pre-compiled.h')
+    env['GchSh'] = env.GchSh(target='/Users/gannons/Development/trunk/tools/pre-compiled/pre-compiled.h.gch', source=env['precompiled_header'])
+    env.Append(CPPFLAGS=['-include' + '/Users/gannons/Development/trunk/tools/pre-compiled/pre-compiled.h'])
+    #env.gch('pre-compiled.cpp')
+
+    import pdb
+    #pdb.set_trace()
